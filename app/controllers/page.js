@@ -4,23 +4,22 @@ const router = express.Router();
 const R = require('ramda');
 const uuidv4 = require('uuid/v4');
 
-const sendResponse = require('../utils/singleton/sendResponse');
-const elasticService = require('../services/elasticService');
-const errorHandler = require('../middleware/async-error.middleware');
+const sendResponse = require('../singleton/sendResponse');
+const response = require('../utils/router-error-handler');
 const helper = require('../utils/helper');
+const db = require('../services/DBService');
 
-router.post('/', errorHandler(create));
+router.post('/', response(create));
 
-router.get('/:id', async (req, res, next) => {
-    
+router.get('/:id', async (req, res) => {
     sendResponse(req, res, {data:'hi router get page from id'});
 });
 
-router.put('/:id', (req, res, next) => {
+router.put('/:id', (req, res) => {
     res.send('hi router put page from id')
 });
 
-router.delete('/:id', (req, res, next) => {
+router.delete('/:id', (req, res) => {
     res.send('hi router delete page from id')
 });
 
@@ -31,7 +30,7 @@ async function create(req, res) {
 
     const key = uuidv4();
 
-    const saveDataResult = await elasticService.saveData({
+    const saveDataResult = await db.savePage({
         key,
         value: data
     });

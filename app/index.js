@@ -2,8 +2,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const loggerMiddleware = require('./middleware/logger.middleware');
-const log = require('./utils/singleton/logger');
-const httpStatus = require('http-status');
+const errorHandlerMiddleware = require('./middleware/error.middleware');
+const log = require('./singleton/logger');
 
 const pageCtrl = require('./controllers/page');
 
@@ -17,14 +17,7 @@ app.use(loggerMiddleware);
 
 app.use('/page', pageCtrl);
 
-app.use((err, req, res, next) => {
-    log.error(err);
+app.use(errorHandlerMiddleware);
 
-    if (res.headersSent) {
-        return next(err);
-    }
-
-    res.status(httpStatus.BAD_GATEWAY).json({error: err.message});
-});
-
-app.listen(process.env.PORT || 3000);
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => log.info(`Start in port: ${PORT}`));

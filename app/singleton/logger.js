@@ -8,7 +8,7 @@ const logger = bunyan.createLogger({
         },
         {
             level: 'error',
-            path: 'app/log/errors.log'           // log ERROR and above to a file
+            stream: process.stdout            // log ERROR and above to a file
         }
     ]
 });
