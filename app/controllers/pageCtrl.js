@@ -2,27 +2,14 @@ const express = require('express');
 const router = express.Router();
 
 const R = require('ramda');
-const uuidv4 = require('uuid/v4');
 
 const sendResponse = require('../singleton/sendResponse');
 const response = require('../utils/router-error-handler');
-const helper = require('../utils/helper');
-const db = require('../services/DBService');
 const Page = require('./Page');
 
 router.post('/', response(create));
 
-router.get('/:id', async (req, res) => {
-    sendResponse(req, res, {data:'hi router get page from id'});
-});
-
-router.put('/:id', (req, res) => {
-    res.send('hi router put page from id')
-});
-
-router.delete('/:id', (req, res) => {
-    res.send('hi router delete page from id')
-});
+router.get('/:id', response(get));
 
 async function create(req, res) {
     const page = new Page();
@@ -33,6 +20,19 @@ async function create(req, res) {
     const URL = page.makeURL();
 
     sendResponse(req, res, {data: {URL}});
+}
+
+async function get(req, res) {
+    const id = R.pathOr(null, ['params', 'id'], req);
+
+    if (!id) throw new Error('Invalid id');
+
+    const page = new Page({key: id});
+    const pageJSON = await page.getPage();
+
+    sendResponse(req, res, {
+        data: pageJSON
+    })
 }
 
 
