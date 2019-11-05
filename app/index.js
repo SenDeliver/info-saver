@@ -5,7 +5,7 @@ const loggerMiddleware = require('./middleware/logger.middleware');
 const errorHandlerMiddleware = require('./middleware/error.middleware');
 const log = require('./singleton/logger');
 
-const pageCtrl = require('./controllers/page');
+const pageCtrl = require('./controllers/pageCtrl');
 
 const app = express();
 

@@ -8,6 +8,7 @@ const sendResponse = require('../singleton/sendResponse');
 const response = require('../utils/router-error-handler');
 const helper = require('../utils/helper');
 const db = require('../services/DBService');
+const Page = require('./Page');
 
 router.post('/', response(create));
 
@@ -24,24 +25,14 @@ router.delete('/:id', (req, res) => {
 });
 
 async function create(req, res) {
-    const data = req.body;
+    const page = new Page();
 
-    if (R.isEmpty(data)) throw new Error('Invalid data');
+    page.validate(req.body);
+    await page.save();
 
-    const key = uuidv4();
+    const URL = page.makeURL();
 
-    const saveDataResult = await db.savePage({
-        key,
-        value: data
-    });
-
-    if (saveDataResult) {
-        const URL = helper.makeUrlWithKey(key);
-
-        sendResponse(req, res, {data: {URL}});
-    } else {
-        throw new Error(`Can't save data`);
-    }
+    sendResponse(req, res, {data: {URL}});
 }
 
 
