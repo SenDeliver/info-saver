@@ -1,8 +1,10 @@
 const R = require('ramda');
+const httpStatus = require('http-status');
 const uuidv4 = require('uuid/v4');
 const db = require('../services/DBService');
 const {HOST} = require('../constants');
 const log = require('../singleton/logger');
+const {formatError} = require('../utils/helper');
 
 class Page {
     constructor({key} = {}) {
@@ -15,7 +17,10 @@ class Page {
     validate(data) {
         log.debug('Start validate data %j', data);
 
-        if (R.isEmpty(data)) throw new Error('Invalid data');
+        if (R.isEmpty(data)) formatError({
+            httpCode: httpStatus.BAD_REQUEST,
+            errorMessage: 'Invalid data'
+        });
 
         this.data = data;
 
@@ -30,7 +35,10 @@ class Page {
             value: this.data
         });
 
-        if (!saveDataResult) throw new Error('Failed to save');
+        if (!saveDataResult) formatError({
+            httpCode: httpStatus.INTERNAL_SERVER_ERROR,
+            errorMessage: 'Failed to save'
+        });
     }
 
     makeURL() {
@@ -42,7 +50,10 @@ class Page {
     async getPage() {
         const dbResult = await db.getPage(this.key);
 
-        if (dbResult.length < 1) throw new Error('Page not found');
+        if (dbResult.length < 1) formatError({
+            httpCode: httpStatus.NOT_FOUND,
+            errorMessage: 'Page not found'
+        });
 
         return R.pathOr({}, ['0', 'json_template'], dbResult);
     }
