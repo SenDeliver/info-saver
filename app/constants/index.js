@@ -1,5 +1,8 @@
-const HOST = process.env.MY_URL || 'http://localhost:3000';
+const PORT = process.env.API_PORT || '3001';
+const HOST = process.env.API_HOST || 'http://localhost';
+const URL = `${HOST}:${PORT}`;
 
 module.exports = {
-    HOST
+    URL,
+    PORT
 };

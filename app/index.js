@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const loggerMiddleware = require('./middleware/logger.middleware');
 const errorHandlerMiddleware = require('./middleware/error.middleware');
+const {PORT} = require('./constants');
 const log = require('./singleton/logger');
 
 const pageCtrl = require('./controllers/pageCtrl');
@@ -19,5 +20,4 @@ app.use('/page', pageCtrl);
 
 app.use(errorHandlerMiddleware);
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => log.info(`Start in port: ${PORT}`));
+app.listen(PORT, () => log.info(`Start on port: ${PORT}`));

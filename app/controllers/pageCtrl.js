@@ -2,9 +2,11 @@ const express = require('express');
 const router = express.Router();
 
 const R = require('ramda');
+const httpStatus = require('http-status');
 
 const sendResponse = require('../singleton/sendResponse');
 const response = require('../utils/router-error-handler');
+const {formatError} = require('../utils/helper');
 const Page = require('./Page');
 
 router.post('/', response(create));
@@ -25,7 +27,10 @@ async function create(req, res) {
 async function get(req, res) {
     const id = R.pathOr(null, ['params', 'id'], req);
 
-    if (!id) throw new Error('Invalid id');
+    if (!id) formatError({
+        errorMessage: 'Invalid id',
+        httpCode: httpStatus.BAD_REQUEST
+    });
 
     const page = new Page({key: id});
     const pageJSON = await page.getPage();
