@@ -7,14 +7,9 @@ module.exports = (err, req, res, next) => {
     log.error(err);
 
     let httpCode = httpStatus.INTERNAL_SERVER_ERROR;
-    let data = {};
+    let data = { error: err.message };
 
-    if (err instanceof HttpError) {
-        httpCode = err.httpCode;
-        data = { error: err.message }
-    } else {
-        data = { error: err.message }
-    }
+    if (err instanceof HttpError) httpCode = err.httpCode;
 
     sendResponse(req, res, {
         httpCode,
