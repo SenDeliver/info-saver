@@ -5,6 +5,7 @@ const loggerMiddleware = require('./middleware/logger.middleware');
 const errorHandlerMiddleware = require('./middleware/error.middleware');
 const {PORT} = require('./constants');
 const log = require('./singleton/logger');
+const sendResponse = require('./singleton/sendResponse');
 
 const pageCtrl = require('./controllers/pageCtrl');
 
@@ -17,6 +18,8 @@ app.use(cookieParser());
 app.use(loggerMiddleware);
 
 app.use('/page', pageCtrl);
+
+app.get('/', (req, res) => sendResponse(req, res, {data: "Hello"}));
 
 app.use(errorHandlerMiddleware);
 
