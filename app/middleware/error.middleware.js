@@ -1,5 +1,5 @@
 const log = require('../singleton/logger');
-const httpStatus = require('http-status');
+const httpStatus = require('http-status-codes');
 const sendResponse = require('../singleton/sendResponse');
 const {HttpError} = require('../utils/helper');
 

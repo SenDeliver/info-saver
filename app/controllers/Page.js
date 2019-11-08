@@ -1,8 +1,8 @@
 const R = require('ramda');
-const httpStatus = require('http-status');
+const httpStatus = require('http-status-codes');
 const uuidv4 = require('uuid/v4');
 const db = require('../services/DBService');
-const {HOST} = require('../constants');
+const {URL} = require('../constants');
 const log = require('../singleton/logger');
 const {formatError} = require('../utils/helper');
 
@@ -41,10 +41,10 @@ class Page {
         });
     }
 
-    makeURL() {
-        const URL = `${HOST}/page/${this.key}`;
-        log.debug('Make URL - %s', URL);
-        return URL
+    makeURI() {
+        const URI = `${URL}/page/${this.key}`;
+        log.debug('Make URL - %s', URI);
+        return URI
     }
 
     async getPage() {

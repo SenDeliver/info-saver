@@ -1,4 +1,4 @@
-const httpStatuses = require('http-status');
+const httpStatuses = require('http-status-codes');
 const log = require('./logger');
 
 const sendResponse = (req, res, {httpCode = httpStatuses.OK, data}) => {

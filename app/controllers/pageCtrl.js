@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 const R = require('ramda');
-const httpStatus = require('http-status');
+const httpStatus = require('http-status-codes');
 
 const sendResponse = require('../singleton/sendResponse');
 const response = require('../utils/router-error-handler');
@@ -19,9 +19,9 @@ async function create(req, res) {
     page.validate(req.body);
     await page.save();
 
-    const URL = page.makeURL();
+    const URI = page.makeURI();
 
-    sendResponse(req, res, {data: {URL}});
+    sendResponse(req, res, {data: {URI}});
 }
 
 async function get(req, res) {

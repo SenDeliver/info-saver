@@ -14,14 +14,14 @@ const pgDB = pgp({
     password
 });
 
-(async () => {
+setImmediate(async () => {
     await pgDB.any(`CREATE TABLE IF NOT EXISTS pages (
                      id serial not null unique,
                      json_template jsonb not null,
                      external_key text not null unique
                      );`
     );
-})();
+});
 
 module.exports = {
     pgDB
