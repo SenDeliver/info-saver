@@ -1,4 +1,5 @@
 const pgp = require('pg-promise')();
+const log = require('./logger');
 
 const host = process.env.PG_HOST || 'localhost';
 const port = process.env.PG_PORT || 5432;
@@ -15,12 +16,16 @@ const pgDB = pgp({
 });
 
 setImmediate(async () => {
-    await pgDB.any(`CREATE TABLE IF NOT EXISTS pages (
+    try {
+        await pgDB.any(`CREATE TABLE IF NOT EXISTS pages (
                      id serial not null unique,
                      json_template jsonb not null,
                      external_key text not null unique
                      );`
-    );
+        );
+    } catch (e) {
+        log.error(e);
+    }
 });
 
 module.exports = {
