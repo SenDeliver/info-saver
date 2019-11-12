@@ -14,7 +14,9 @@ router.post('/', response(create));
 router.get('/:id', response(get));
 
 async function create(req, res) {
-    const page = new Page();
+    const eid = R.pathOr(null, ['query', 'eid'], req);
+
+    const page = new Page({key: eid});
 
     page.validate(req.body);
     await page.save();

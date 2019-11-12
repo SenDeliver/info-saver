@@ -5,6 +5,7 @@ const db = require('../services/DBService');
 const {URL} = require('../constants');
 const log = require('../singleton/logger');
 const {formatError} = require('../utils/helper');
+const {USER_FRIENDLY_DB_ERROR} = require('../constants');
 
 class Page {
     constructor({key} = {}) {
@@ -28,17 +29,26 @@ class Page {
     }
 
     async save() {
-        log.info('Save data with key: %s, value: %j', this.key, this.data);
+        try {
+            log.info('Save data with key: %s, value: %j', this.key, this.data);
 
-        const saveDataResult = await db.savePage({
-            key: this.key,
-            value: this.data
-        });
+            const saveDataResult = await db.savePage({
+                key: this.key,
+                value: this.data
+            });
 
-        if (!saveDataResult) formatError({
-            httpCode: httpStatus.INTERNAL_SERVER_ERROR,
-            errorMessage: 'Failed to save'
-        });
+            if (!Boolean(saveDataResult)) formatError({
+                httpCode: httpStatus.INTERNAL_SERVER_ERROR,
+                errorMessage: 'Failed to save'
+            });
+        } catch (e) {
+            if (USER_FRIENDLY_DB_ERROR.hasOwnProperty(e.code)) formatError({
+                httpCode: httpStatus.BAD_REQUEST,
+                errorMessage: USER_FRIENDLY_DB_ERROR[e.code]
+            });
+
+            throw new Error(e);
+        }
     }
 
     makeURI() {
