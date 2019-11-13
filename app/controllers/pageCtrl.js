@@ -7,16 +7,17 @@ const httpStatus = require('http-status-codes');
 const sendResponse = require('../singleton/sendResponse');
 const response = require('../utils/router-error-handler');
 const {formatError} = require('../utils/helper');
-const Page = require('./Page');
+const {PageEmerging, PageExisting} = require('./Page');
 
 router.post('/', response(create));
 
-router.get('/:id', response(get));
+router.get('/:eid', response(get));
 
 async function create(req, res) {
     const eid = R.pathOr(null, ['query', 'eid'], req);
+    const make_access_token = R.pathOr(null, ['query', 'make_access_token'], req);
 
-    const page = new Page({key: eid});
+    const page = new PageEmerging({key: eid, make_access_token});
 
     page.validate(req.body);
     await page.save();
@@ -27,14 +28,15 @@ async function create(req, res) {
 }
 
 async function get(req, res) {
-    const id = R.pathOr(null, ['params', 'id'], req);
+    const eid = R.pathOr(null, ['params', 'eid'], req);
+    const access_token = R.pathOr(null, ['query', 'access_token'], req);
 
-    if (!id) formatError({
+    if (!eid) formatError({
         errorMessage: 'Invalid id',
         httpCode: httpStatus.BAD_REQUEST
     });
 
-    const page = new Page({key: id});
+    const page = new PageExisting({key: eid, access_token});
     const pageJSON = await page.getPage();
 
     sendResponse(req, res, {

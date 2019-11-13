@@ -7,12 +7,11 @@ const log = require('../singleton/logger');
 const {formatError} = require('../utils/helper');
 const {USER_FRIENDLY_DB_ERROR} = require('../constants');
 
-class Page {
-    constructor({key} = {}) {
-        this.key = key || this._generateId();
+class PageBase {
+    constructor() {
+        this.key = null;
         this.data = null;
-
-        log.debug('Generate key: %s', this.key);
+        this.access_token = null;
     };
 
     validate(data) {
@@ -28,13 +27,27 @@ class Page {
         return true;
     }
 
+    _makeUniqueKey() {
+        return uuidv4();
+    }
+}
+
+class PageEmerging extends PageBase {
+    constructor({key, make_access_token} = {}) {
+        super();
+
+        this.key = key || this._makeUniqueKey();
+        this.access_token = make_access_token === 'true' ? this._makeUniqueKey() : null;
+    }
+
     async save() {
         try {
             log.info('Save data with key: %s, value: %j', this.key, this.data);
 
             const saveDataResult = await db.savePage({
                 key: this.key,
-                value: this.data
+                value: this.data,
+                access_token: this.access_token
             });
 
             if (!Boolean(saveDataResult)) formatError({
@@ -51,10 +64,23 @@ class Page {
         }
     }
 
+
     makeURI() {
-        const URI = `${URL}/page/${this.key}`;
+        let URI = `${URL}/page/${this.key}`;
+
+        if (this.access_token) URI = `${URI}?access_token=${this.access_token}`;
+
         log.debug('Make URL - %s', URI);
         return URI
+    }
+}
+
+class PageExisting extends PageBase {
+    constructor({access_token, key}) {
+        super();
+
+        this.access_token = access_token || null;
+        this.key = key;
     }
 
     async getPage() {
@@ -65,12 +91,19 @@ class Page {
             errorMessage: 'Page not found'
         });
 
-        return R.pathOr({}, ['0', 'json_template'], dbResult);
-    }
+        const JSONTemplate = R.pathOr({}, ['0', 'json_template'], dbResult);
+        const accessToken = R.pathOr(null, ['0', 'access_token'], dbResult);
 
-    _generateId() {
-        return uuidv4();
+        if (Boolean(accessToken) && accessToken !== this.access_token) formatError({
+            httpCode: httpStatus.FORBIDDEN,
+            errorMessage: 'Forbidden operation'
+        });
+
+        return JSONTemplate;
     }
 }
 
-module.exports = Page;
+module.exports = {
+    PageExisting,
+    PageEmerging
+};
