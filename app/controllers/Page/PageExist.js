@@ -15,22 +15,28 @@ class PageExist extends PageBase {
     }
 
     async getPage() {
-        const dbResult = await db.getPage(this.eid);
+        return await this._DBQueryHandler(async () => {
+            log.info('Get page with eid: %s', this.eid);
 
-        if (dbResult.length < 1) formatError({
-            httpCode: httpStatus.NOT_FOUND,
-            errorMessage: 'Page not found'
+            const dbResult = await db.getPage(this.eid);
+
+            log.debug('Response for Get page: %j', dbResult);
+
+            if (dbResult.length < 1) formatError({
+                httpCode: httpStatus.NOT_FOUND,
+                errorMessage: 'Page not found'
+            });
+
+            const JSONTemplate = R.pathOr({}, ['0', 'json_template'], dbResult);
+            const accessToken = R.pathOr(null, ['0', 'access_token'], dbResult);
+
+            if (Boolean(accessToken) && accessToken !== this.access_token) formatError({
+                httpCode: httpStatus.FORBIDDEN,
+                errorMessage: 'Forbidden operation'
+            });
+
+            return JSONTemplate;
         });
-
-        const JSONTemplate = R.pathOr({}, ['0', 'json_template'], dbResult);
-        const accessToken = R.pathOr(null, ['0', 'access_token'], dbResult);
-
-        if (Boolean(accessToken) && accessToken !== this.access_token) formatError({
-            httpCode: httpStatus.FORBIDDEN,
-            errorMessage: 'Forbidden operation'
-        });
-
-        return JSONTemplate;
     }
 }
 

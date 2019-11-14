@@ -20,8 +20,13 @@ const updatePage = async ({data, eid}) => {
         );
 };
 
+const removePage = async eid => {
+    return await pgDB.any(`delete from pages where external_id = $1`, [eid]);
+};
+
 module.exports = {
     savePage,
     getPage,
-    updatePage
+    updatePage,
+    removePage
 };

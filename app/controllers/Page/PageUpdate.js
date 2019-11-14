@@ -1,5 +1,4 @@
 const {PageBase} = require('./PageBase');
-const {USER_FRIENDLY_DB_ERROR} = require('../../constants');
 const he = require('he');
 const db = require('../../services/DBService');
 const httpStatus = require('http-status-codes');
@@ -17,7 +16,9 @@ class PageUpdate extends PageBase {
     }
 
     async update() {
-        try {
+        await this._DBQueryHandler(async () => {
+            log.info('Update page with eid: %s', this.eid);
+
             await this._checkAbleToModify();
 
             const updateResult = await db.updatePage({
@@ -29,17 +30,7 @@ class PageUpdate extends PageBase {
                 httpCode: httpStatus.BAD_REQUEST,
                 errorMessage: 'Failed to update'
             });
-        } catch (e) {
-            if (USER_FRIENDLY_DB_ERROR.hasOwnProperty(e.code)) formatError({
-                httpCode: httpStatus.BAD_REQUEST,
-                errorMessage: USER_FRIENDLY_DB_ERROR[e.code]
-            });
-
-            formatError({
-                httpCode: e.httpCode || httpStatus.INTERNAL_SERVER_ERROR,
-                errorMessage: e.message || 'Unexpected response'
-            });
-        }
+        });
     }
 
 }

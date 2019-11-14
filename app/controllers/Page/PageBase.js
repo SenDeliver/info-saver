@@ -3,6 +3,7 @@ const httpStatus = require('http-status-codes');
 const uuidv4 = require('uuid/v4');
 const db = require('../../services/DBService');
 const log = require('../../singleton/logger');
+const {USER_FRIENDLY_DB_ERROR} = require("../../constants");
 const {formatError} = require('../../utils/helper');
 
 class PageBase {
@@ -30,6 +31,8 @@ class PageBase {
     }
 
     async _checkAbleToModify() {
+        log.info('Check able to modify for eid: %s, token: %s', this.eid, this.access_token);
+
         const page = await db.getPage(this.eid);
 
         if (page.length < 1) formatError({
@@ -43,6 +46,22 @@ class PageBase {
             httpCode: httpStatus.FORBIDDEN,
             errorMessage: 'Forbidden operation'
         });
+    }
+
+    async _DBQueryHandler(fn) {
+        try {
+            return await fn();
+        } catch (e) {
+            if (USER_FRIENDLY_DB_ERROR.hasOwnProperty(e.code)) formatError({
+                httpCode: httpStatus.BAD_REQUEST,
+                errorMessage: USER_FRIENDLY_DB_ERROR[e.code]
+            });
+
+            formatError({
+                httpCode: e.httpCode || httpStatus.INTERNAL_SERVER_ERROR,
+                errorMessage: e.message || 'Unexpected response'
+            });
+        }
     }
 }
 

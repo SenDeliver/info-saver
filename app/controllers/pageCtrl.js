@@ -11,12 +11,15 @@ const {formatError} = require('../utils/helper');
 const {PageAppear} = require('./Page/PageAppear');
 const {PageExist} = require('./Page/PageExist');
 const {PageUpdate} = require('./Page/PageUpdate');
+const {PageDelete} = require('./Page/PageDelete');
 
 router.post('/', response(create));
 
 router.get('/:eid', response(get));
 
 router.put('/:eid', response(update));
+
+router.delete('/:eid', response(remove));
 
 async function create(req, res) {
     const eid = R.pathOr(null, ['query', 'eid'], req);
@@ -64,8 +67,24 @@ async function update(req, res) {
 
     sendResponse(req, res, {
         data: {result: 'Success update'}
-    })
+    });
 }
 
+async function remove(req, res) {
+    const eid = R.pathOr(null, ['params', 'eid'], req);
+    const access_token = R.pathOr(null, ['query', 'access_token'], req);
+
+    if (!eid) formatError({
+        errorMessage: 'Invalid id',
+        httpCode: httpStatus.BAD_REQUEST
+    });
+
+    const page = new PageDelete({eid, access_token});
+    await page.remove();
+
+    sendResponse(req, res, {
+        data: {result: 'Success remove'}
+    });
+}
 
 module.exports = router;
