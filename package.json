@@ -13,6 +13,7 @@
     "bunyan": "^1.8.12",
     "cookie-parser": "^1.4.4",
     "express": "^4.17.1",
+    "he": "^1.2.0",
     "http-status-codes": "^1.4.0",
     "pg": "^7.12.1",
     "pg-promise": "^9.3.3",
