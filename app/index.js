@@ -23,4 +23,7 @@ app.get('/', (req, res) => sendResponse(req, res, {data: "Hello"}));
 
 app.use(errorHandlerMiddleware);
 
-app.listen(PORT, () => log.info(`Start on port: ${PORT}`));
+app.listen(PORT, (err) => {
+    if (err) log.fatal(err);
+    log.info(`Start on port: ${PORT}`)
+});
