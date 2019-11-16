@@ -1,0 +1,84 @@
+{
+  "title": "Hello, i'm info-saver",
+  "description": "Save your JSON with unique permalink",
+  "wiki": {
+    "endpoints": [
+      {
+        "POST /page": {
+          "examples": [
+            {
+              "REQ": {
+                "URI": "HOST/page",
+                "data": {
+                  "msg": "test1"
+                }
+              },
+              "RES": {
+                "URI": "HOST/page/967a62cb-7e96-410d-b836-b118b55ff444"
+              }
+            },
+            {
+              "REQ": {
+                "URI": "HOST/page?eid=super_page",
+                "data": {
+                  "msg": "test1"
+                }
+              },
+              "RES": {
+                "URI": "HOST/page/super_page"
+              }
+            },
+            {
+              "REQ": {
+                "URI": "HOST/page?make_access_token=true",
+                "data": {
+                  "msg": "test1"
+                },
+                "RES": {
+                  "URI": "HOST/page/967a62cb-7e96-410d-b836-b118b55ff444?access_token=5cbaf580-9d61-481c-9a4d-98c18b561244"
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "GET /page/eid": {
+          "examples": [
+            {
+              "REQ": "HOST/page/967a62cb-7e96-410d-b836-b118b55ff444?access_token=5cbaf580-9d61-481c-9a4d-98c18b561244",
+              "RES": "your save data"
+            }
+          ]
+        }
+      },
+      {
+        "PUT /page/eid": {
+          "examples": [
+            {
+              "REQ": {
+                "URI": "HOST/page/967a62cb-7e96-410d-b836-b118b55ff444?access_token=5cbaf580-9d61-481c-9a4d-98c18b561244",
+                "data": {
+                  "msg": "test1-update"
+                }
+              },
+              "RES": "Success update"
+            }
+          ]
+        }
+      },
+      {
+        "DELETE /page/eid": {
+          "examples": [
+            {
+              "REQ": {
+                "URI": "HOST/page/967a62cb-7e96-410d-b836-b118b55ff444?access_token=5cbaf580-9d61-481c-9a4d-98c18b561244"
+              },
+              "RES": "Success remove"
+            }
+          ]
+        }
+      }
+    ]
+  }
+}
