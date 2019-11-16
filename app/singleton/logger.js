@@ -1,6 +1,6 @@
 const bunyan = require('bunyan');
 const logger = bunyan.createLogger({
-    name: 'QR-Page'
+    name: 'info-saver'
 });
 
 module.exports = logger;

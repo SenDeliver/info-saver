@@ -8,7 +8,7 @@ const pgCn = Object.freeze({
 
 const PORT = process.env.PORT || '3001';
 const HOST = process.env.API_HOST || 'http://localhost';
-const URL = `${HOST}:${PORT}`;
+const URL = HOST === 'http://localhost' ? `${HOST}:${PORT}` : HOST;
 
 module.exports = {
   pgCn,
