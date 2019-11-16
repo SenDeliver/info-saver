@@ -6,9 +6,11 @@ const pgCn = Object.freeze({
     password:   process.env.PG_PASSWORD || 'root'
 });
 
+const HEROKU_HOST = 'https://info-saver.herokuapp.com';
+
 const PORT = process.env.PORT || '3001';
 const HOST = process.env.API_HOST || 'http://localhost';
-const URL = HOST === 'http://localhost' ? `${HOST}:${PORT}` : HOST;
+const URL = HOST !== HEROKU_HOST ? `${HOST}:${PORT}` : HOST;
 
 module.exports = {
   pgCn,
