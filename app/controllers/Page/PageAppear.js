@@ -2,7 +2,7 @@ const {PageBase} = require('./PageBase');
 const he = require('he');
 const db = require('../../services/DBService');
 const httpStatus = require('http-status-codes');
-const {URL} = require('../../constants');
+const {URL} = require('../../conf');
 const {formatError} = require('../../utils/helper');
 const log = require('../../singleton/logger');
 

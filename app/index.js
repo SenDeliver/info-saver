@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const loggerMiddleware = require('./middleware/logger.middleware');
 const errorHandlerMiddleware = require('./middleware/error.middleware');
-const {PORT} = require('./constants');
+const {PORT} = require('./conf');
 const log = require('./singleton/logger');
 const sendResponse = require('./singleton/sendResponse');
 
