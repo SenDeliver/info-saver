@@ -6,7 +6,7 @@ const pgCn = Object.freeze({
     password:   process.env.PG_PASSWORD || 'root'
 });
 
-const PORT = process.env.API_PORT || '3001';
+const PORT = process.env.PORT || '3001';
 const HOST = process.env.API_HOST || 'http://localhost';
 const URL = `${HOST}:${PORT}`;
 
