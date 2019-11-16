@@ -15,28 +15,26 @@ class PageExist extends PageBase {
     }
 
     async getPage() {
-        return await this._DBQueryHandler(async () => {
-            log.info('Get page with eid: %s', this.eid);
+        log.info('Get page with eid: %s', this.eid);
 
-            const dbResult = await db.getPage(this.eid);
+        const dbResult = await this._DBQueryHandler(async () => db.getPage(this.eid));
 
-            log.debug('Response for Get page: %j', dbResult);
+        log.debug('Response for Get page: %j', dbResult);
 
-            if (dbResult.length < 1) formatError({
-                httpCode: httpStatus.NOT_FOUND,
-                errorMessage: 'Page not found'
-            });
-
-            const JSONTemplate = R.pathOr({}, ['0', 'json_template'], dbResult);
-            const accessToken = R.pathOr(null, ['0', 'access_token'], dbResult);
-
-            if (Boolean(accessToken) && accessToken !== this.access_token) formatError({
-                httpCode: httpStatus.FORBIDDEN,
-                errorMessage: 'Forbidden operation'
-            });
-
-            return JSONTemplate;
+        if (dbResult.length < 1) formatError({
+            httpCode: httpStatus.NOT_FOUND,
+            errorMessage: 'Page not found'
         });
+
+        const JSONTemplate = R.pathOr({}, ['0', 'json_template'], dbResult);
+        const accessToken = R.pathOr(null, ['0', 'access_token'], dbResult);
+
+        if (Boolean(accessToken) && accessToken !== this.access_token) formatError({
+            httpCode: httpStatus.FORBIDDEN,
+            errorMessage: 'Forbidden operation'
+        });
+
+        return JSONTemplate;
     }
 }
 

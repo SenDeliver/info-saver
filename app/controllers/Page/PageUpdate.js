@@ -16,20 +16,19 @@ class PageUpdate extends PageBase {
     }
 
     async update() {
-        await this._DBQueryHandler(async () => {
-            log.info('Update page with eid: %s', this.eid);
+        log.info('Update page with eid: %s', this.eid);
 
+        const updateResult = await this._DBQueryHandler(async () => {
             await this._checkAbleToModify();
-
-            const updateResult = await db.updatePage({
+            return db.updatePage({
                 data: this.data,
                 eid: this.eid
             });
+        });
 
-            if (!Boolean(updateResult)) formatError({
-                httpCode: httpStatus.BAD_REQUEST,
-                errorMessage: 'Failed to update'
-            });
+        if (!Boolean(updateResult)) formatError({
+            httpCode: httpStatus.BAD_REQUEST,
+            errorMessage: 'Failed to update'
         });
     }
 
