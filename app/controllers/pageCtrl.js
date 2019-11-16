@@ -17,6 +17,8 @@ router.post('/', response(create));
 
 router.get('/:eid', response(get));
 
+router.get('/', response((req, res) => sendResponse(req, res, {data: require('../data/wiki')})));
+
 router.put('/:eid', response(update));
 
 router.delete('/:eid', response(remove));

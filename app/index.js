@@ -5,7 +5,6 @@ const loggerMiddleware = require('./middleware/logger.middleware');
 const errorHandlerMiddleware = require('./middleware/error.middleware');
 const {PORT} = require('./conf');
 const log = require('./singleton/logger');
-const sendResponse = require('./singleton/sendResponse');
 
 const pageCtrl = require('./controllers/pageCtrl');
 
@@ -19,7 +18,7 @@ app.use(loggerMiddleware);
 
 app.use('/page', pageCtrl);
 
-app.get('/', (req, res) => sendResponse(req, res, {data: "Hello"}));
+app.get('/', (req, res) => res.redirect('/page'));
 
 app.use(errorHandlerMiddleware);
 
