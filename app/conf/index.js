@@ -1,3 +1,5 @@
+const bunyan = require('bunyan');
+
 const pgCn = Object.freeze({
     host:       process.env.PG_HOST     || 'localhost',
     port:       process.env.PG_PORT     || 5432,
@@ -12,9 +14,12 @@ const PORT = process.env.PORT || '3001';
 const HOST = process.env.API_HOST || 'http://localhost';
 const URL = HOST !== HEROKU_HOST ? `${HOST}:${PORT}` : HOST;
 
+const LOG_LEVEL = process.env.LOG_LEVEL || bunyan.TRACE;
+
 module.exports = {
-  pgCn,
-  PORT,
-  HOST,
-  URL
+    pgCn,
+    PORT,
+    HOST,
+    URL,
+    LOG_LEVEL
 };
