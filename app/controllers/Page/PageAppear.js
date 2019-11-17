@@ -15,7 +15,7 @@ class PageAppear extends PageBase {
     }
 
     async save() {
-        log.info('Save data with eid: %s, value: %j', this.eid, this.data);
+        log.info('Try to save data with eid: %s, value: %j', this.eid, this.data);
 
         const saveDataResult = await this._DBQueryHandler(
             async () => db.savePage({
@@ -29,6 +29,8 @@ class PageAppear extends PageBase {
             httpCode: httpStatus.INTERNAL_SERVER_ERROR,
             errorMessage: 'Failed to save'
         });
+
+        log.info('Success save data');
     }
 
 

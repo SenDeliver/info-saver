@@ -19,7 +19,7 @@ class PageExist extends PageBase {
 
         const dbResult = await this._DBQueryHandler(async () => db.getPage(this.eid));
 
-        log.debug('Response for Get page: %j', dbResult);
+        log.debug('Response from DB for Get page: %j', dbResult);
 
         if (dbResult.length < 1) formatError({
             httpCode: httpStatus.NOT_FOUND,

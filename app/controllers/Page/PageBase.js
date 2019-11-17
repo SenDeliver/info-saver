@@ -52,6 +52,8 @@ class PageBase {
         try {
             return await fn();
         } catch (e) {
+            log.error('Error from DB: %s, all details: %j', e.message, e);
+
             if (USER_FRIENDLY_DB_ERROR.hasOwnProperty(e.code)) formatError({
                 httpCode: httpStatus.BAD_REQUEST,
                 errorMessage: USER_FRIENDLY_DB_ERROR[e.code]

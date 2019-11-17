@@ -18,6 +18,8 @@ class PageDelete extends PageBase{
             await this._checkAbleToModify();
             await db.removePage(this.eid);
         });
+
+        log.debug('Success remove');
     }
 }
 

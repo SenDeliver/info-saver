@@ -13,19 +13,18 @@ const {PageExist} = require('./Page/PageExist');
 const {PageUpdate} = require('./Page/PageUpdate');
 const {PageDelete} = require('./Page/PageDelete');
 
+router.get('/', response((req, res) => sendResponse(req, res, {data: require('../data/wiki')})));
+
 router.post('/', response(create));
 
 router.get('/:eid', response(get));
-
-router.get('/', response((req, res) => sendResponse(req, res, {data: require('../data/wiki')})));
 
 router.put('/:eid', response(update));
 
 router.delete('/:eid', response(remove));
 
 async function create(req, res) {
-    const eid = R.pathOr(null, ['query', 'eid'], req);
-    const make_access_token = R.pathOr(null, ['query', 'make_access_token'], req);
+    const {eid, make_access_token} = req.query;
 
     const page = new PageAppear({eid, make_access_token});
 
@@ -38,8 +37,7 @@ async function create(req, res) {
 }
 
 async function get(req, res) {
-    const eid = R.pathOr(null, ['params', 'eid'], req);
-    const access_token = R.pathOr(null, ['query', 'access_token'], req);
+    const {eid, access_token} = req.query;
 
     if (!eid) formatError({
         errorMessage: 'Invalid id',
@@ -55,8 +53,7 @@ async function get(req, res) {
 }
 
 async function update(req, res) {
-    const eid = R.pathOr(null, ['params', 'eid'], req);
-    const access_token = R.pathOr(null, ['query', 'access_token'], req);
+    const {eid, access_token} = req.query;
 
     if (!eid) formatError({
         errorMessage: 'Invalid id',
@@ -73,8 +70,7 @@ async function update(req, res) {
 }
 
 async function remove(req, res) {
-    const eid = R.pathOr(null, ['params', 'eid'], req);
-    const access_token = R.pathOr(null, ['query', 'access_token'], req);
+    const {eid, access_token} = req.query;
 
     if (!eid) formatError({
         errorMessage: 'Invalid id',

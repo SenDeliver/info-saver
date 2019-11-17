@@ -5,13 +5,11 @@ const httpStatus = require('http-status-codes');
 const {formatError} = require('../../utils/helper');
 const log = require('../../singleton/logger');
 
-
 class PageUpdate extends PageBase {
     constructor({eid, access_token} = {}) {
         super();
 
         this.access_token = access_token || null;
-
         this.eid = eid ? he.encode(eid) : null;
     }
 
@@ -30,6 +28,8 @@ class PageUpdate extends PageBase {
             httpCode: httpStatus.BAD_REQUEST,
             errorMessage: 'Failed to update'
         });
+
+        log.debug('Success update');
     }
 
 }
