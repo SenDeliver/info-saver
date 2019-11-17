@@ -31,7 +31,7 @@ class PageBase {
     }
 
     async _checkAbleToModify() {
-        log.info('Check able to modify for eid: %s, token: %s', this.eid, this.access_token);
+        log.trace('Check able to modify for eid: %s, token: %s', this.eid, this.access_token);
 
         const page = await db.getPage(this.eid);
 

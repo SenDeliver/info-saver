@@ -14,7 +14,7 @@ class PageUpdate extends PageBase {
     }
 
     async update() {
-        log.info('Update page with eid: %s', this.eid);
+        log.debug('Update page with eid: %s', this.eid);
 
         const updateResult = await this._DBQueryHandler(async () => {
             await this._checkAbleToModify();
@@ -29,7 +29,7 @@ class PageUpdate extends PageBase {
             errorMessage: 'Failed to update'
         });
 
-        log.debug('Success update');
+        log.info('Success update');
     }
 
 }

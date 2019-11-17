@@ -12,14 +12,14 @@ class PageDelete extends PageBase{
     }
 
     async remove() {
-        log.info('Delete page with eid: %s', this.eid);
+        log.debug('Delete page with eid: %s', this.eid);
 
         await this._DBQueryHandler(async () => {
             await this._checkAbleToModify();
             await db.removePage(this.eid);
         });
 
-        log.debug('Success remove');
+        log.info('Success remove');
     }
 }
 
