@@ -37,7 +37,8 @@ async function create(req, res) {
 }
 
 async function get(req, res) {
-    const {eid, access_token} = req.query;
+    const eid = req.params.eid;
+    const {access_token} = req.query;
 
     if (!eid) formatError({
         errorMessage: 'Invalid id',
