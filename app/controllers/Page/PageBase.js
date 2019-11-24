@@ -43,7 +43,7 @@ class PageBase {
     }
 
     /**
-     * Check accessibility to data
+     * Check accessibility to saved data
      * @returns {Promise<void>}
      */
     async checkAccessibility(operations) {
@@ -57,18 +57,9 @@ class PageBase {
         });
 
         let accessToken;
-
-        switch (operations) {
-            case OPERATIONS.R:
-                accessToken = R.pathOr(null, ['0', 'access_token_read'], this.page);
-                break;
-            case OPERATIONS.U:
-                accessToken = R.pathOr(null, ['0', 'access_token_update'], this.page);
-                break;
-            case OPERATIONS.D:
-                accessToken = R.pathOr(null, ['0', 'access_token_delete'], this.page);
-                break;
-        }
+        if      (operations === OPERATIONS.R) accessToken = R.pathOr(null, ['0', 'access_token_read'], this.page);
+        else if (operations === OPERATIONS.U) accessToken = R.pathOr(null, ['0', 'access_token_update'], this.page);
+        else if (operations === OPERATIONS.D) accessToken = R.pathOr(null, ['0', 'access_token_delete'], this.page);
 
         if (Boolean(accessToken) && accessToken !== this.access_token) formatError({
             httpCode: httpStatus.FORBIDDEN,
