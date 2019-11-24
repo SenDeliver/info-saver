@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 
-const R = require('ramda');
 const httpStatus = require('http-status-codes');
 
 const sendResponse = require('../singleton/sendResponse');
@@ -24,20 +23,18 @@ router.put('/:eid', response(update));
 router.delete('/:eid', response(remove));
 
 async function create(req, res) {
-    const {eid, make_access_token} = req.query;
-
-    const page = new PageAppear({eid, make_access_token});
+    const page = new PageAppear(req.query);
 
     page.validate(req.body);
     await page.save();
 
-    const URI = page.makeURI();
+    const URI = page.createLinks();
 
     sendResponse(req, res, {data: {URI}});
 }
 
 async function get(req, res) {
-    const eid = req.params.eid;
+    const {eid} = req.params;
     const {access_token} = req.query;
 
     if (!eid) formatError({
@@ -54,7 +51,8 @@ async function get(req, res) {
 }
 
 async function update(req, res) {
-    const {eid, access_token} = req.query;
+    const {eid} = req.params;
+    const {access_token} = req.query;
 
     if (!eid) formatError({
         errorMessage: 'Invalid id',
@@ -71,7 +69,8 @@ async function update(req, res) {
 }
 
 async function remove(req, res) {
-    const {eid, access_token} = req.query;
+    const {eid} = req.params;
+    const {access_token} = req.query;
 
     if (!eid) formatError({
         errorMessage: 'Invalid id',

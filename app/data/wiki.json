@@ -28,13 +28,65 @@
             },
             {
               "REQ": {
-                "RES": {
-                  "URI": "https://info-saver.herokuapp.com/page/967a62cb-7e96-410d-b836-b118b55ff444?access_token=5cbaf580-9d61-481c-9a4d-98c18b561244"
-                },
-                "URI": "https://info-saver.herokuapp.com/page?make_access_token=true",
+                "URI": "https://info-saver.herokuapp.com/page?accessibility=R",
                 "data": {
                   "msg": "test1"
                 }
+              },
+              "RES": {
+                "URI": [
+                  {
+                    "read": "https://info-saver.herokuapp.com/page/21b86aea-3dbf-4a66-b103-9e001a72ce01?access_token=5ffec0e8-cb03-44f4-9760-a39de93a4687"
+                  },
+                  {
+                    "update": "https://info-saver.herokuapp.com/page/21b86aea-3dbf-4a66-b103-9e001a72ce01?access_token=8f097018-a293-4e62-8d88-ef76a8f6b68e"
+                  },
+                  {
+                    "delete": "https://info-saver.herokuapp.com/page/21b86aea-3dbf-4a66-b103-9e001a72ce01?access_token=ae69c445-1a01-4bb7-8516-abba6848e7c1"
+                  }
+                ]
+              }
+            },
+            {
+              "REQ": {
+                "URI": "https://info-saver.herokuapp.com/page?accessibility=U",
+                "data": {
+                  "msg": "test1"
+                }
+              },
+              "RES": {
+                "URI": [
+                  {
+                    "read": "https://info-saver.herokuapp.com/page/21b86aea-3dbf-4a66-b103-9e001a72ce01"
+                  },
+                  {
+                    "update": "https://info-saver.herokuapp.com/page/21b86aea-3dbf-4a66-b103-9e001a72ce01?access_token=8f097018-a293-4e62-8d88-ef76a8f6b68e"
+                  },
+                  {
+                    "delete": "https://info-saver.herokuapp.com/page/21b86aea-3dbf-4a66-b103-9e001a72ce01?access_token=ae69c445-1a01-4bb7-8516-abba6848e7c1"
+                  }
+                ]
+              }
+            },
+            {
+              "REQ": {
+                "URI": "https://info-saver.herokuapp.com/page?accessibility=D",
+                "data": {
+                  "msg": "test1"
+                }
+              },
+              "RES": {
+                "URI": [
+                  {
+                    "read": "https://info-saver.herokuapp.com/page/21b86aea-3dbf-4a66-b103-9e001a72ce01"
+                  },
+                  {
+                    "update": "https://info-saver.herokuapp.com/page/21b86aea-3dbf-4a66-b103-9e001a72ce01"
+                  },
+                  {
+                    "delete": "https://info-saver.herokuapp.com/page/21b86aea-3dbf-4a66-b103-9e001a72ce01?access_token=ae69c445-1a01-4bb7-8516-abba6848e7c1"
+                  }
+                ]
               }
             }
           ]
@@ -83,9 +135,9 @@
         "example": "HOST/page?eid=super_page1",
         "description": "custom external id"
       },
-      "make_access_token": {
-        "example": "HOST/page?make_access_token=true",
-        "description": "generates a token that must be specified to receive data"
+      "accessibility": {
+        "example": "HOST/page?accessibility=R,U,D,A",
+        "description": "Sets the level of access to data without a token, R - Read, U - update, D - delete, A - all (A === R)"
       }
     }
   },

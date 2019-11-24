@@ -3,16 +3,24 @@ const httpStatus = require('http-status-codes');
 const uuidv4 = require('uuid/v4');
 const db = require('../../services/DBService');
 const log = require('../../singleton/logger');
-const {USER_FRIENDLY_DB_ERROR} = require("../../constants");
+const {USER_FRIENDLY_DB_ERROR, OPERATIONS} = require('../../constants');
 const {formatError} = require('../../utils/helper');
 
 class PageBase {
+    /**
+     * BASE CONSTRUCTOR
+     */
     constructor() {
         this.eid = null;
         this.data = null;
         this.access_token = null;
     };
 
+    /**
+     * Validate data before save
+     * @param data
+     * @returns {boolean}
+     */
     validate(data) {
         log.debug('Start validate data %j', data);
 
@@ -26,21 +34,41 @@ class PageBase {
         return true;
     }
 
-    _makeUniqueKey() {
+    /**
+     * Make unique key - string
+     * @returns {*}
+     */
+    makeUniqueKey() {
         return uuidv4();
     }
 
-    async _checkAbleToModify() {
+    /**
+     * Check accessibility to data
+     * @returns {Promise<void>}
+     */
+    async checkAccessibility(operations) {
         log.trace('Check able to modify for eid: %s, token: %s', this.eid, this.access_token);
 
-        const page = await db.getPage(this.eid);
+        this.page = await db.getPage(this.eid);
 
-        if (page.length < 1) formatError({
+        if (this.page.length < 1) formatError({
             httpCode: httpStatus.NOT_FOUND,
             errorMessage: 'Page not found'
         });
 
-        const accessToken = R.pathOr(null, ['0', 'access_token'], page);
+        let accessToken;
+
+        switch (operations) {
+            case OPERATIONS.R:
+                accessToken = R.pathOr(null, ['0', 'access_token_read'], this.page);
+                break;
+            case OPERATIONS.U:
+                accessToken = R.pathOr(null, ['0', 'access_token_update'], this.page);
+                break;
+            case OPERATIONS.D:
+                accessToken = R.pathOr(null, ['0', 'access_token_delete'], this.page);
+                break;
+        }
 
         if (Boolean(accessToken) && accessToken !== this.access_token) formatError({
             httpCode: httpStatus.FORBIDDEN,
@@ -48,7 +76,12 @@ class PageBase {
         });
     }
 
-    async _DBQueryHandler(fn) {
+    /**
+     * Wrapper for query to DB
+     * @param fn
+     * @returns {Promise<*>}
+     */
+    async DBQueryHandler(fn) {
         try {
             return await fn();
         } catch (e) {

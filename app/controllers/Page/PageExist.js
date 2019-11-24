@@ -1,12 +1,14 @@
 const {PageBase} = require('./PageBase');
 const he = require('he');
-const db = require('../../services/DBService');
-const httpStatus = require('http-status-codes');
-const {formatError} = require('../../utils/helper');
 const log = require('../../singleton/logger');
 const R = require('ramda');
+const {OPERATIONS} = require('../../constants');
 
 class PageExist extends PageBase {
+    /**
+     * @param access_token
+     * @param eid
+     */
     constructor({access_token, eid}) {
         super();
 
@@ -14,27 +16,18 @@ class PageExist extends PageBase {
         this.eid = eid ? he.encode(eid) : null;
     }
 
+    /**
+     * Get saved data from DB
+     * @returns {Promise<f2|f1>}
+     */
     async getPage() {
         log.info('Get page with eid: %s', this.eid);
 
-        const dbResult = await this._DBQueryHandler(async () => db.getPage(this.eid));
-
-        log.debug('Response from DB for Get page: %j', dbResult);
-
-        if (dbResult.length < 1) formatError({
-            httpCode: httpStatus.NOT_FOUND,
-            errorMessage: 'Page not found'
+        await this.DBQueryHandler(async () => {
+            await this.checkAccessibility(OPERATIONS.R);
         });
 
-        const JSONTemplate = R.pathOr({}, ['0', 'json_template'], dbResult);
-        const accessToken = R.pathOr(null, ['0', 'access_token'], dbResult);
-
-        if (Boolean(accessToken) && accessToken !== this.access_token) formatError({
-            httpCode: httpStatus.FORBIDDEN,
-            errorMessage: 'Forbidden operation'
-        });
-
-        return JSONTemplate;
+        return R.pathOr({}, ['0', 'json_template'], this.page);
     }
 }
 

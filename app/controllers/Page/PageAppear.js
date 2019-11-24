@@ -5,23 +5,40 @@ const httpStatus = require('http-status-codes');
 const {URL} = require('../../conf');
 const {formatError} = require('../../utils/helper');
 const log = require('../../singleton/logger');
+const {PROTECTION_LVL, PROTECTION_FOR_OPERATIONS, OPERATIONS} = require('../../constants');
 
 class PageAppear extends PageBase {
-    constructor({eid, make_access_token} = {}) {
+    /**
+     * @param eid
+     * @param accessibility
+     */
+    constructor({eid, accessibility} = {}) {
         super();
 
-        this.eid = eid ? he.encode(eid) : this._makeUniqueKey();
-        this.access_token = make_access_token === 'true' ? this._makeUniqueKey() : null;
+        this.eid = eid ? he.encode(eid) : this.makeUniqueKey();
+
+        this.access_token_read = null;
+        this.access_token_update = null;
+        this.access_token_delete = null;
+
+        this.protectionLevel = this._determinationLevelProtection(accessibility);
     }
 
+    /**
+     * Save data to DB
+     * @returns {Promise<void>}
+     */
     async save() {
         log.debug('Try to save data with eid: %s, value: %j', this.eid, this.data);
 
-        const saveDataResult = await this._DBQueryHandler(
+        const saveDataResult = await this.DBQueryHandler(
             async () => db.savePage({
                 eid: this.eid,
                 value: this.data,
-                access_token: this.access_token
+                protection_level: this.protectionLevel,
+                access_token_read: this.access_token_read,
+                access_token_update: this.access_token_update,
+                access_token_delete: this.access_token_delete
             })
         );
 
@@ -34,13 +51,67 @@ class PageAppear extends PageBase {
     }
 
 
-    makeURI() {
+    /**
+     * Make URI for save data
+     * @param access_token
+     * @returns {string}
+     * @private
+     */
+    _makeURI(access_token) {
         let URI = `${URL}/page/${this.eid}`;
 
-        if (this.access_token) URI = `${URI}?access_token=${this.access_token}`;
+        if (access_token) URI = `${URI}?access_token=${access_token}`;
 
         log.debug('Make URL - %s', URI);
         return URI
+    }
+
+    /**
+     * Create access links
+     * @returns {string|*[]}
+     */
+    createLinks() {
+        if (this.protectionLevel === PROTECTION_LVL.WITHOUT_PROTECTION) {
+            return this._makeURI();
+        } else {
+            return [
+                {read: this._makeURI(this.access_token_read)},
+                {update: this._makeURI(this.access_token_update)},
+                {delete: this._makeURI(this.access_token_delete)}
+            ]
+        }
+    }
+
+    /**
+     * @param accessibility
+     * @returns {number}
+     * @private
+     */
+    _determinationLevelProtection(accessibility = []) {
+        if (accessibility.length < 1) return PROTECTION_LVL.WITHOUT_PROTECTION;
+
+        const accessibilitySplit = accessibility.split(',').map(lvl => lvl.toUpperCase());
+
+        let protectionLevel = Math.max(...accessibilitySplit.map(access => PROTECTION_FOR_OPERATIONS[OPERATIONS[access]])) || PROTECTION_LVL.WITHOUT_PROTECTION;
+
+        switch (protectionLevel) {
+            case PROTECTION_LVL.READ:
+                this.access_token_read = this.makeUniqueKey();
+                this.access_token_update = this.makeUniqueKey();
+                this.access_token_delete = this.makeUniqueKey();
+                break;
+            case PROTECTION_LVL.UPDATE:
+                this.access_token_update = this.makeUniqueKey();
+                this.access_token_delete = this.makeUniqueKey();
+                break;
+            case PROTECTION_LVL.DELETE:
+                this.access_token_delete = this.makeUniqueKey();
+                break;
+            default:
+                break;
+        }
+
+        return protectionLevel;
     }
 }
 

@@ -4,8 +4,13 @@ const db = require('../../services/DBService');
 const httpStatus = require('http-status-codes');
 const {formatError} = require('../../utils/helper');
 const log = require('../../singleton/logger');
+const {OPERATIONS} = require('../../constants');
 
 class PageUpdate extends PageBase {
+    /**
+     * @param eid
+     * @param access_token
+     */
     constructor({eid, access_token} = {}) {
         super();
 
@@ -13,11 +18,15 @@ class PageUpdate extends PageBase {
         this.eid = eid ? he.encode(eid) : null;
     }
 
+    /**
+     * Update saved data in DB
+     * @returns {Promise<void>}
+     */
     async update() {
         log.debug('Update page with eid: %s', this.eid);
 
-        const updateResult = await this._DBQueryHandler(async () => {
-            await this._checkAbleToModify();
+        const updateResult = await this.DBQueryHandler(async () => {
+            await this.checkAccessibility(OPERATIONS.U);
             return db.updatePage({
                 data: this.data,
                 eid: this.eid
