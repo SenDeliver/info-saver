@@ -1,88 +1,91 @@
-const express = require('express');
-const router = express.Router();
-
 const httpStatus = require('http-status-codes');
 
 const sendResponse = require('../singleton/sendResponse');
-const response = require('../utils/router-error-handler');
 const {formatError} = require('../utils/helper');
 
 const {PageAppear} = require('./Page/PageAppear');
 const {PageExist} = require('./Page/PageExist');
 const {PageUpdate} = require('./Page/PageUpdate');
 const {PageDelete} = require('./Page/PageDelete');
+const {ApiCtrl} = require('./ApiCtrl');
 
-router.get('/', response((req, res) => sendResponse(req, res, {data: require('../data/wiki')})));
+class PageCtrl extends ApiCtrl {
+    constructor() {
+        super();
 
-router.post('/', response(create));
+        this.router.get('/', this.response((req, res) => sendResponse(req, res, {data: require('../data/wiki')})));
 
-router.get('/:eid', response(get));
+        this.router.post('/', this.response(this.create));
 
-router.put('/:eid', response(update));
+        this.router.get('/:eid', this.response(this.get));
 
-router.delete('/:eid', response(remove));
+        this.router.put('/:eid', this.response(this.update));
 
-async function create(req, res) {
-    const page = new PageAppear(req.query);
+        this.router.delete('/:eid', this.response(this.remove));
+    }
 
-    page.validate(req.body);
-    await page.save();
+    async create(req, res) {
+        const page = new PageAppear(req.query);
 
-    const URI = page.createLinks();
+        page.validate(req.body);
+        await page.save();
 
-    sendResponse(req, res, {data: {URI}});
+        const URI = page.createLinks();
+
+        sendResponse(req, res, {data: {URI}});
+    }
+
+    async get(req, res) {
+        const {eid} = req.params;
+        const {access_token} = req.query;
+
+        if (!eid) formatError({
+            errorMessage: 'Invalid id',
+            httpCode: httpStatus.BAD_REQUEST
+        });
+
+        const page = new PageExist({eid, access_token});
+        const pageJSON = await page.getPage();
+
+        sendResponse(req, res, {
+            data: pageJSON
+        })
+    }
+
+    async update(req, res) {
+        const {eid} = req.params;
+        const {access_token} = req.query;
+
+        if (!eid) formatError({
+            errorMessage: 'Invalid id',
+            httpCode: httpStatus.BAD_REQUEST
+        });
+
+        const page = new PageUpdate({eid, access_token});
+        page.validate(req.body);
+        await page.update();
+
+        sendResponse(req, res, {
+            data: {result: 'Success update'}
+        });
+    }
+
+    async remove(req, res) {
+        const {eid} = req.params;
+        const {access_token} = req.query;
+
+        if (!eid) formatError({
+            errorMessage: 'Invalid id',
+            httpCode: httpStatus.BAD_REQUEST
+        });
+
+        const page = new PageDelete({eid, access_token});
+        await page.remove();
+
+        sendResponse(req, res, {
+            data: {result: 'Success remove'}
+        });
+    }
 }
 
-async function get(req, res) {
-    const {eid} = req.params;
-    const {access_token} = req.query;
-
-    if (!eid) formatError({
-        errorMessage: 'Invalid id',
-        httpCode: httpStatus.BAD_REQUEST
-    });
-
-    const page = new PageExist({eid, access_token});
-    const pageJSON = await page.getPage();
-
-    sendResponse(req, res, {
-        data: pageJSON
-    })
-}
-
-async function update(req, res) {
-    const {eid} = req.params;
-    const {access_token} = req.query;
-
-    if (!eid) formatError({
-        errorMessage: 'Invalid id',
-        httpCode: httpStatus.BAD_REQUEST
-    });
-
-    const page = new PageUpdate({eid, access_token});
-    page.validate(req.body);
-    await page.update();
-
-    sendResponse(req, res, {
-        data: {result: 'Success update'}
-    });
-}
-
-async function remove(req, res) {
-    const {eid} = req.params;
-    const {access_token} = req.query;
-
-    if (!eid) formatError({
-        errorMessage: 'Invalid id',
-        httpCode: httpStatus.BAD_REQUEST
-    });
-
-    const page = new PageDelete({eid, access_token});
-    await page.remove();
-
-    sendResponse(req, res, {
-        data: {result: 'Success remove'}
-    });
-}
-
-module.exports = router;
+module.exports = PageCtrl;

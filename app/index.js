@@ -16,7 +16,7 @@ app.use(cookieParser());
 
 app.use(loggerMiddleware);
 
-app.use('/page', pageCtrl);
+app.use('/page', new pageCtrl().router);
 
 app.get('/', (req, res) => res.redirect('/page'));
 
