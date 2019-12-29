@@ -1,6 +1,5 @@
 const httpStatus = require('http-status-codes');
 
-const sendResponse = require('../singleton/sendResponse');
 const {formatError} = require('../utils/helper');
 
 const {PageAppear} = require('./Page/PageAppear');
@@ -13,7 +12,7 @@ class PageCtrl extends ApiCtrl {
     constructor() {
         super();
 
-        this.router.get('/', this.response((req, res) => sendResponse(req, res, {data: require('../data/wiki')})));
+        this.router.get('/', this.response((req, res) => this.sendResponse(req, res, {data: require('../data/wiki')})));
 
         this.router.post('/', this.response(this.create));
 
@@ -32,7 +31,7 @@ class PageCtrl extends ApiCtrl {
 
         const URI = page.createLinks();
 
-        sendResponse(req, res, {data: {URI}});
+        this.sendResponse(req, res, {data: {URI}});
     }
 
     async get(req, res) {
@@ -47,7 +46,7 @@ class PageCtrl extends ApiCtrl {
         const page = new PageExist({eid, access_token});
         const pageJSON = await page.getPage();
 
-        sendResponse(req, res, {
+        this.sendResponse(req, res, {
             data: pageJSON
         })
     }
@@ -65,7 +64,7 @@ class PageCtrl extends ApiCtrl {
         page.validate(req.body);
         await page.update();
 
-        sendResponse(req, res, {
+        this.sendResponse(req, res, {
             data: {result: 'Success update'}
         });
     }
@@ -82,7 +81,7 @@ class PageCtrl extends ApiCtrl {
         const page = new PageDelete({eid, access_token});
         await page.remove();
 
-        sendResponse(req, res, {
+        this.sendResponse(req, res, {
             data: {result: 'Success remove'}
         });
     }
